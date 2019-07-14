@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, Form, Button } from 'grommet'
+import styled from 'styled-components'
 import FormField from './FormField'
 
+import irisSetosa from './images/iris_setosa.jpg'
+import irisVeriscolor from './images/iris_veriscolor.jpeg'
+import irisVirginica from './images/iris_virginica.jpg'
+
+const images = {
+  'Iris Setosa': irisSetosa,
+  'Iris Versicolour': irisVeriscolor,
+  'Iris Virginica': irisVirginica
+}
+
 const INIT_FORM_DATA = {
-  sepalLength: 4,
-  sepalWidth: 2,
-  petalLength: 1,
+  sepalLength: 0,
+  sepalWidth: 0,
+  petalLength: 0,
   petalWidth: 0
 }
 
 const API_URL = 'http://127.0.0.1:5000/prediction'
 
-const App = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState(INIT_FORM_DATA)
+const App = styled(({ className }) => {
+  const [formData, setFormData] = useState()
   const [result, setResult] = useState('')
 
   useEffect(() => {
-    setIsLoading(true)
-    fetch(API_URL,
+    if (formData !== INIT_FORM_DATA) {
+      fetch(API_URL,
       {
         headers: {
           'Accept': 'application/json',
@@ -28,32 +38,48 @@ const App = () => {
         body: JSON.stringify(formData)
       })
       .then(response => response.json())
-      .then(response => {
-        setResult(response.result)
-        setIsLoading(false)
-      })
+      .then(response => setResult(response.result))
+    }
   }, [formData])
 
   return (
-    <Box width='medium' pad='large' responsive>
-      <Text size='large' weight='bold'>Siri: Iris Plant Classifier</Text>
-      <Form
-        onSubmit={({ value }) => setFormData(value)}
-        onReset={() => setFormData(INIT_FORM_DATA)}
-      >
-        <FormField name='sepalLength' label='Sepal Length' placeholder={INIT_FORM_DATA.sepalLength} />
-        <FormField name='sepalWidth' label='Sepal Width' placeholder={INIT_FORM_DATA.sepalWidth} />
-        <FormField name='petalLength' label='Petal Length' placeholder={INIT_FORM_DATA.petalLength} />
-        <FormField name='petalWidth' label='Petal Width' placeholder={INIT_FORM_DATA.petalWidth} />
-        <Box direction='row' justify='between'>
-          <Button type='reset' label='Reset' />
-          <Button type='submit' label='Predict' primary />
+    <Box width='100vw' height='100vh' align='center' justify='center' className={className}>
+      <Text size='xlarge' weight='bold'>Siri: Iris Plant Classifier</Text>
+      <Box direction='row'>
+        <Box width='medium' pad='large'>
+          <Form
+            onSubmit={({ value }) => setFormData(value)}
+            onReset={() => {
+              setFormData(INIT_FORM_DATA)
+              setResult(null)
+            }}
+          >
+            <FormField name='sepalLength' label='Sepal Length' />
+            <FormField name='sepalWidth' label='Sepal Width' />
+            <FormField name='petalLength' label='Petal Length' />
+            <FormField name='petalWidth' label='Petal Width' />
+            <Box direction='row' justify='between' pad={{ top: '25px' }}>
+              <Button type='reset' label='Reset' />
+              <Button type='submit' label='Predict' primary />
+            </Box>
+          </Form>
         </Box>
-      </Form>
-      <Text>{result}</Text>
-      { isLoading ? <span>Loading...</span> : null}
+        { result ? <Box pad='large'>
+          <Text>This type of iris plant is:</Text>
+          <Text color='#514ac3' weight='bold'>{result}</Text>
+          <img alt={result} className='image' src={images[result]} />
+        </Box> : null }
+       </Box>
     </Box>
   )
-}
+})`
+  .image {
+    height: 300px;
+    width: 300px;
+    object-fit: cover;
+    object-position: center;
+    padding: 10px 0;
+  }
+`
 
 export default App

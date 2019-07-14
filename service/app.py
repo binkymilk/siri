@@ -21,7 +21,7 @@ def predict_iris():
         response = jsonify({
             "statusCode": 200,
             "status": "Prediction made",
-            "result": "The type of iris plant is: " + types[prediction[0]]
+            "result": types[prediction[0]]
         })
         return response
     except Exception as error:

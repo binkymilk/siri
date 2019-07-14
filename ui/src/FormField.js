@@ -1,12 +1,11 @@
 import React from 'react'
 import { FormField as BaseFormField, TextInput } from 'grommet'
 
-const FormField = ({ name, label, placeholder }) => (
+const FormField = ({ name, label, value }) => (
   <BaseFormField
     name={name}
     label={label}
     component={TextInput}
-    placeholder={`${placeholder}`}
     type='number'
     step='0.1'
     required
